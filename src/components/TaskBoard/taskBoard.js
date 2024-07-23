@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Box, Button } from "@mui/material";
+import { Backdrop, Box, Button, CircularProgress } from "@mui/material";
 import { useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
@@ -14,7 +14,7 @@ import { toast } from "react-toastify";
 
 const TaskBoard = () => {
   const [searchQuery, setSearchQuery] = useState(null);
-  console.log("🚀 ~ TaskBoard ~ searchQuery:", searchQuery);
+  const [isLoading, setLoading] = useState(false);
   const [isEditMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
@@ -37,6 +37,7 @@ const TaskBoard = () => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
+        setLoading(true);
         await getAllTask()
           .then((res) => {
             const data = res.data;
@@ -58,12 +59,15 @@ const TaskBoard = () => {
             };
             setBox(tasks);
             setAllTasks(tasks);
+            setLoading(false);
           })
           .catch((error) => {
             console.log(error);
+            setLoading(false);
           });
       } catch (error) {
         console.error("Error fetching tasks:", error);
+        setLoading(false);
       }
     };
 
@@ -169,6 +173,14 @@ const TaskBoard = () => {
 
   return (
     <>
+      {isLoading === true && (
+        <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={true}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
+      )}
       <div style={{ height: "100vh", width: "100%" }}>
         <div>
           <Button
@@ -193,7 +205,7 @@ const TaskBoard = () => {
         <Search setSearchQuery={setSearchQuery} />
         <Box
           sx={{
-            display: "flex",
+            display: { sm: "block", md: "flex" },
             justifyContent: "center",
             alignItems: "flex-start",
             height: "100%",
