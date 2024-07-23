@@ -15,7 +15,7 @@ const SignUpPage = () => {
     password: "",
     first_name: "",
     last_name: "",
-    profile_image: null,
+    profile_image: "",
     // confirm_password: "",
   };
   const navigate = useNavigate();
