@@ -25,9 +25,10 @@ const AppContent = () => {
       if (location.pathname === "/signup") return;
       localStorage.clear();
       navigate("/");
-    } else {
-      navigate("/task");
     }
+    // else {
+    //   navigate("/task");
+    // }
     // eslint-disable-next-line
   }, [token, navigate]);
 

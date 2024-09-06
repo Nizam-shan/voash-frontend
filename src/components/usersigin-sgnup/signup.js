@@ -16,7 +16,7 @@ const SignUpPage = () => {
     first_name: "",
     last_name: "",
     profile_image: "",
-    // confirm_password: "",
+    confirm_password: "",
   };
   const navigate = useNavigate();
   const validationSchema = Yup.object({
@@ -24,7 +24,7 @@ const SignUpPage = () => {
       .email("Invalid email address")
       .required("Email is required"),
     password: Yup.string().required("Password is required"),
-    first_name: Yup.string().required("First name is required"),
+    first_name: Yup.string().required("First name is required").trim(),
     last_name: Yup.string(),
     confirm_password: Yup.string()
       .required("Confirm passsword is required")
@@ -129,8 +129,8 @@ const SignUpPage = () => {
                 fullWidth
                 value={values.first_name}
                 onChange={handleChange}
-                error={touched.first_name && Boolean(errors.first_name)}
-                helperText={touched.first_name && Boolean(errors.first_name)}
+                error={touched.first_name && errors.first_name}
+                helperText={touched.first_name && errors.first_name}
               />
               <TextField
                 margin="dense"
@@ -140,8 +140,8 @@ const SignUpPage = () => {
                 fullWidth
                 value={values.last_name}
                 onChange={handleChange}
-                error={touched.last_name && Boolean(errors.last_name)}
-                helperText={touched.last_name && Boolean(errors.last_name)}
+                error={touched.last_name && errors.last_name}
+                helperText={touched.last_name && errors.last_name}
               />
               <TextField
                 margin="dense"
@@ -151,8 +151,8 @@ const SignUpPage = () => {
                 fullWidth
                 value={values.email}
                 onChange={handleChange}
-                error={touched.email && Boolean(errors.email)}
-                helperText={touched.email && Boolean(errors.email)}
+                error={touched.email && errors.email}
+                helperText={touched.email && errors.email}
               />
               <TextField
                 margin="dense"
@@ -163,7 +163,7 @@ const SignUpPage = () => {
                 value={values.password}
                 onChange={handleChange}
                 error={touched.password && Boolean(errors.password)}
-                helperText={touched.password && Boolean(errors.password)}
+                helperText={touched.password && errors.password}
               />
               <TextField
                 margin="dense"
@@ -176,9 +176,7 @@ const SignUpPage = () => {
                 error={
                   touched.confirm_password && Boolean(errors.confirm_password)
                 }
-                helperText={
-                  touched.confirm_password && Boolean(errors.confirm_password)
-                }
+                helperText={touched.confirm_password && errors.confirm_password}
               />
               <div
                 style={{

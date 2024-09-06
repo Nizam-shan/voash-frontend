@@ -18,7 +18,7 @@ export const Search = ({ setSearchQuery }) => {
         mt: 3,
         mx: 5,
         p: 2,
-        display: "flex",
+        display: { lg: "flex", sm: "block" },
         justifyContent: "space-between",
       }}
     >

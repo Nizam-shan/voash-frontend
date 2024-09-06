@@ -33,44 +33,43 @@ const TaskBoard = () => {
     in_progress: [],
     Completed: [],
   });
+  const fetchTasks = async () => {
+    try {
+      setLoading(true);
+      await getAllTask()
+        .then((res) => {
+          const data = res.data;
+
+          const todoTasks = data.data.filter(
+            (task) => task.status === "pending"
+          );
+          const inProgressTasks = data.data.filter(
+            (task) => task.status === "in_progress"
+          );
+          const completeTasks = data.data.filter(
+            (task) => task.status === "Completed"
+          );
+
+          const tasks = {
+            todo: todoTasks,
+            in_progress: inProgressTasks,
+            Completed: completeTasks,
+          };
+          setBox(tasks);
+          setAllTasks(tasks);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.log(error);
+          setLoading(false);
+        });
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        setLoading(true);
-        await getAllTask()
-          .then((res) => {
-            const data = res.data;
-
-            const todoTasks = data.data.filter(
-              (task) => task.status === "pending"
-            );
-            const inProgressTasks = data.data.filter(
-              (task) => task.status === "in_progress"
-            );
-            const completeTasks = data.data.filter(
-              (task) => task.status === "Completed"
-            );
-
-            const tasks = {
-              todo: todoTasks,
-              in_progress: inProgressTasks,
-              Completed: completeTasks,
-            };
-            setBox(tasks);
-            setAllTasks(tasks);
-            setLoading(false);
-          })
-          .catch((error) => {
-            console.log(error);
-            setLoading(false);
-          });
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-        setLoading(false);
-      }
-    };
-
     fetchTasks();
   }, []);
 
@@ -80,12 +79,13 @@ const TaskBoard = () => {
       await deleteTask(id)
         .then((res) => {
           // const data = res.data;
-          setBox((prev) => ({
-            todo: prev.todo.filter((task) => task._id !== id),
-            Completed: prev.Completed.filter((task) => task._id !== id),
+          // setBox((prev) => ({
+          //   todo: prev.todo.filter((task) => task._id !== id),
+          //   Completed: prev.Completed.filter((task) => task._id !== id),
 
-            in_progress: prev.in_progress.filter((task) => task._id !== id),
-          }));
+          //   in_progress: prev.in_progress.filter((task) => task._id !== id),
+          // }));
+          fetchTasks();
           toast.success(res.data?.message);
         })
         .catch((error) => {
@@ -109,12 +109,11 @@ const TaskBoard = () => {
     if (source.droppableId === destination.droppableId) {
       return;
     }
-    console.log("🚀 ~ onDrag ~ destination:", destination);
-    console.log("🚀 ~ onDrag ~ source:", source);
+
     const sourceBox = Array.from(box[source.droppableId]);
     const destBox = Array.from(box[destination.droppableId]);
     const [draggedItem] = sourceBox.splice(source.index, 1);
-    console.log("🚀 ~ onDrag ~ sourceBox:", sourceBox);
+
     destBox.splice(destination.index, 0, draggedItem);
     setBox((prev) => ({
       ...prev,
@@ -125,7 +124,7 @@ const TaskBoard = () => {
     updateTaskStatus(draggedItem._id, destination.droppableId)
       .then((res) => {
         const data = res?.data;
-        toast.success(data?.message);
+        toast.success(data?.message.toUpperCase());
       })
       .catch((error) => {
         toast.error(error.response.data.message || "Some error occured");
@@ -156,7 +155,7 @@ const TaskBoard = () => {
     const filterTask = (task) => {
       if (!searchQuery) return task;
       return task.filter((item) =>
-        item.title.toLowerCase().includes(searchQuery.toLowerCase())
+        item.title.toUpperCase().includes(searchQuery.toUpperCase())
       );
     };
     if (searchQuery) {
@@ -257,12 +256,13 @@ const TaskBoard = () => {
             )}
           </Droppable> */}
 
-            {Object.keys(box).map((boxkey) => (
-              <Droppable droppableId={boxkey} key={boxkey}>
+            {Object.keys(box).map((boxkey, index) => (
+              <Droppable droppableId={boxkey} key={index}>
                 {(provider) => (
                   <div
                     ref={provider.innerRef}
                     {...provider.droppableProps}
+                    key={index}
                     style={{
                       display: "flex",
                       flexDirection: "column",
@@ -345,6 +345,7 @@ const TaskBoard = () => {
                                     color: "white",
                                     padding: 7,
                                     border: "none",
+                                    cursor: "pointer",
                                   }}
                                   onClick={() => handleDelete(item._id)}
                                 >
@@ -357,6 +358,7 @@ const TaskBoard = () => {
                                     color: "white",
                                     padding: 7,
                                     border: "none",
+                                    cursor: "pointer",
                                   }}
                                   onClick={() => handleEditTask(item)}
                                 >
@@ -369,6 +371,7 @@ const TaskBoard = () => {
                                     color: "white",
                                     padding: 7,
                                     border: "none",
+                                    cursor: "pointer",
                                   }}
                                   onClick={() => handleView(item)}
                                 >

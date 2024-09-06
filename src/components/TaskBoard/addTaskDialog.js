@@ -25,30 +25,29 @@ export const AddForm = ({
   setEditMode,
   setView,
 }) => {
-  console.log("🚀 ~ view:", view);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const validationSchema = Yup.object({
-    title: Yup.string().required("Title is required"),
-    descriptions: Yup.string().required("Description is required"),
-  });
 
   const initialValues = {
     title: formData?.title ? formData.title : "",
     descriptions: formData?.descriptions ? formData.descriptions : "",
   };
 
-  const handleSubmit = async (values, { isSubmitting }) => {
+  const validationSchema = Yup.object({
+    title: Yup.string().required("Title is required").trim(),
+    descriptions: Yup.string().required("Description is required").trim(),
+  });
+
+  const handleSubmit = async (values, { setSubmitting }) => {
+    setSubmitting(true);
     if (isEditMode) {
       await editTask(values, formData._id)
         .then((res) => {
-          console.log("🚀 ~ .then ~ res:", res);
           addNewTask(res.data?.data);
           setOpen(false);
           toast.success(res.data?.message);
         })
         .catch((error) => {
-          console.log("🚀 ~ awaiteditTask ~ error:", error);
           toast.error(error.response.data.message || "Some error occured");
         });
     } else {
@@ -69,6 +68,7 @@ export const AddForm = ({
           );
         });
     }
+    setSubmitting(false);
   };
 
   const handleClose = () => {
@@ -82,18 +82,28 @@ export const AddForm = ({
       <div>
         <Dialog
           fullScreen={fullScreen}
+          fullWidth
           open={open}
           onClose={handleClose}
           aria-labelledby="responsive-dialog-title"
         >
-          <DialogTitle id="responsive-dialog-title">Add Task</DialogTitle>
-          <DialogContent>
+          <DialogTitle id="responsive-dialog-title" sx={{ fontWeight: "bold" }}>
+            {view ? "Task Details" : isEditMode ? "Edit Task" : "Add Task"}
+          </DialogTitle>
+          <DialogContent sx={{ padding: 2 }}>
             <Formik
               initialValues={initialValues}
               validationSchema={validationSchema}
               onSubmit={handleSubmit}
             >
-              {({ isSubmitting, handleChange, values, touched, errors }) => (
+              {({
+                isSubmitting,
+                handleChange,
+                values,
+                touched,
+                errors,
+                handleBlur,
+              }) => (
                 <Form>
                   <CustomTextField
                     label="Title"
@@ -101,15 +111,17 @@ export const AddForm = ({
                     value={values.title}
                     required
                     disabled={view}
+                    onBlur={handleBlur}
                     onChange={handleChange}
-                    error={touched.title && Boolean(errors.title)}
-                    helperText={touched.title && Boolean(errors.title)}
+                    error={touched.title && errors.title}
+                    helperText={touched.title && errors.title}
                   />
                   <CustomTextField
                     label="Description"
                     name="descriptions"
                     value={values.descriptions}
                     required
+                    onBlur={handleBlur}
                     disabled={view}
                     onChange={handleChange}
                     multiline
@@ -117,7 +129,17 @@ export const AddForm = ({
                     error={touched.descriptions && errors.descriptions}
                     helperText={touched.descriptions && errors.descriptions}
                   />
-                  <DialogActions>
+                  {view || isEditMode ? (
+                    <div>
+                      <span style={{ padding: "5px", marginTop: "5px" }}>
+                        Created At:{" "}
+                      </span>
+                      {formData?.createdAt}
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  <DialogActions sx={{ mt: 30 }}>
                     <Button autoFocus variant="outined" onClick={handleClose}>
                       Close
                     </Button>

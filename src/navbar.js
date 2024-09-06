@@ -32,13 +32,13 @@ function ResponsiveAppBar() {
             <IconButton sx={{ p: 0 }}>
               <Avatar
                 alt="Remy Sharp"
-                src={`http://localhost:5000/${localStorage.getItem(
+                src={`${process.env.REACT_APP_API}${localStorage.getItem(
                   "profile_image"
                 )}`}
               />
             </IconButton>
 
-            {token ? (
+            {token && window.location.pathname !== "/" ? (
               <Button
                 sx={{ background: "red", color: "white", ml: 1 }}
                 onClick={logout}
@@ -48,8 +48,25 @@ function ResponsiveAppBar() {
               </Button>
             ) : (
               <div>
-                <Button sx={{ background: "white", ml: 1 }}>Login</Button>
-                <Button sx={{ color: "white", ml: 1 }}> Signup</Button>
+                <Button
+                  sx={{
+                    background: "white",
+                    ml: 1,
+                    "&:hover": {
+                      background: "white",
+                    },
+                  }}
+                  onClick={() => navigate("/")}
+                >
+                  Login
+                </Button>
+                <Button
+                  sx={{ color: "white", ml: 1 }}
+                  onClick={() => navigate("/signup")}
+                >
+                  {" "}
+                  Signup
+                </Button>
               </div>
             )}
           </Box>
