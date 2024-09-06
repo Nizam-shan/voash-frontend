@@ -199,6 +199,7 @@ const TaskBoard = () => {
             view={view}
             setView={setView}
             setEditMode={setEditMode}
+            fetchTasks={fetchTasks}
           />
         </div>
         <Search setSearchQuery={setSearchQuery} />

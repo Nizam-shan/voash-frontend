@@ -24,6 +24,7 @@ export const AddForm = ({
   addNewTask,
   setEditMode,
   setView,
+  fetchTasks,
 }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
@@ -44,6 +45,7 @@ export const AddForm = ({
       await editTask(values, formData._id)
         .then((res) => {
           addNewTask(res.data?.data);
+          fetchTasks();
           setOpen(false);
           toast.success(res.data?.message);
         })
@@ -54,6 +56,7 @@ export const AddForm = ({
       await addTask(values)
         .then((res) => {
           addNewTask(res.data?.data);
+          fetchTasks();
           setOpen(false);
           toast.success(res.data?.message);
           setFormData({
@@ -62,6 +65,10 @@ export const AddForm = ({
           });
         })
         .catch((error) => {
+          setFormData({
+            title: "",
+            descriptions: "",
+          });
           toast.error(
             error?.response?.data?.message ||
               "Some error occurred. Please try again"
